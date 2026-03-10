@@ -3,7 +3,7 @@ import { HttpError } from "../lib/errors.js";
 import { ZodError } from "zod";
 import { logger } from "../lib/logger.js";
 
-export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
   let status = 500;
   let message = "Internal server error";
   let details: unknown = undefined;
