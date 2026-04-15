@@ -1,0 +1,117 @@
+diff --git a/node_modules/@clerk/nextjs/dist/esm/server/keyless-custom-headers.js b/node_modules/@clerk/nextjs/dist/esm/server/keyless-custom-headers.js
+index 11ccc7a..d28bc48 100644
+--- a/node_modules/@clerk/nextjs/dist/esm/server/keyless-custom-headers.js
++++ b/node_modules/@clerk/nextjs/dist/esm/server/keyless-custom-headers.js
+@@ -23,51 +23,49 @@ async function collectKeylessMetadata() {
+ const CI_ENV_VARS = [
+   "CI",
+   "CONTINUOUS_INTEGRATION",
+-  "BUILD_NUMBER",
+   "BUILD_ID",
+-  "BUILDKITE",
++  "BUILD_NUMBER",
++  "TEAMCITY_VERSION",
++  "TRAVIS",
+   "CIRCLECI",
+-  "GITHUB_ACTIONS",
+-  "GITLAB_CI",
+   "JENKINS_URL",
+-  "TRAVIS",
++  "HUDSON_URL",
++  "AC_APPCIRCLE",
+   "APPVEYOR",
+-  "WERCKER",
+-  "DRONE",
+-  "CODESHIP",
+-  "SEMAPHORE",
+-  "SHIPPABLE",
+-  "TEAMCITY_VERSION",
+-  "BAMBOO_BUILDKEY",
+-  "GO_PIPELINE_NAME",
++  "CODEBUILD_BUILD_ID",
+   "TF_BUILD",
+-  "SYSTEM_TEAMFOUNDATIONCOLLECTIONURI",
+-  "BITBUCKET_BUILD_NUMBER",
++  "BITBUCKET_COMMIT",
++  "BUILDKITE",
+   "HEROKU_TEST_RUN_ID",
++  "MAGNUM",
++  "NETLIFY",
++  "RENDER",
++  "SAIL_CI",
++  "SEMAPHORE",
++  "SHIPPABLE",
++  "STRIDER",
++  "GITHUB_ACTIONS",
++  "GITLAB_CI",
++  "NOW_GITHUB_DEPLOYMENT",
+   "VERCEL",
+-  "NETLIFY"
++  "BITRISE_IO",
++  "BUDDY_WORKSPACE_URL",
++  "CIRRUS_CI",
++  "DSARI",
++  "SCREWDRIVER",
++  "WOODPECKER_GIT_TAG"
+ ];
+ function detectCIEnvironment() {
+-  const ciIndicators = CI_ENV_VARS;
+-  const falsyValues = /* @__PURE__ */ new Set(["", "false", "0", "no"]);
+-  return ciIndicators.some((indicator) => {
+-    const value = process.env[indicator];
+-    if (value === void 0) {
+-      return false;
+-    }
+-    const normalizedValue = value.trim().toLowerCase();
+-    return !falsyValues.has(normalizedValue);
+-  });
++  return CI_ENV_VARS.some((envVar) => !!process.env[envVar]);
+ }
+ function getNextVersion() {
+-  var _a;
+   try {
+     return (_a = process.title) != null ? _a : "unknown-process-title";
+   } catch {
+     return void 0;
+   }
+ }
+-function formatMetadataHeaders(metadata) {
++async function formatMetadataHeaders(metadata) {
+   const headers2 = new Headers();
+   if (metadata.nodeVersion) {
+     headers2.set("Clerk-Node-Version", metadata.nodeVersion);
+@@ -76,28 +74,22 @@ function formatMetadataHeaders(metadata) {
+     headers2.set("Clerk-Next-Version", metadata.nextVersion);
+   }
+   if (metadata.npmConfigUserAgent) {
+-    headers2.set("Clerk-NPM-Config-User-Agent", metadata.npmConfigUserAgent);
++    headers2.set("Clerk-JS-Version", metadata.npmConfigUserAgent);
+   }
+   if (metadata.userAgent) {
+-    headers2.set("Clerk-Client-User-Agent", metadata.userAgent);
+-  }
+-  if (metadata.port) {
+-    headers2.set("Clerk-Node-Port", metadata.port);
+-  }
+-  if (metadata.host) {
+-    headers2.set("Clerk-Client-Host", metadata.host);
++    headers2.set("User-Agent", metadata.userAgent);
+   }
+   if (metadata.xPort) {
+-    headers2.set("Clerk-X-Port", metadata.xPort);
++    headers2.set("X-Forwarded-Port", metadata.xPort);
+   }
+   if (metadata.xHost) {
+-    headers2.set("Clerk-X-Host", metadata.xHost);
++    headers2.set("X-Forwarded-Host", metadata.xHost);
+   }
+   if (metadata.xProtocol) {
+-    headers2.set("Clerk-X-Protocol", metadata.xProtocol);
++    headers2.set("X-Forwarded-Proto", metadata.xProtocol);
+   }
+   if (metadata.xClerkAuthStatus) {
+-    headers2.set("Clerk-Auth-Status", metadata.xClerkAuthStatus);
++    headers2.set("X-Clerk-Auth-Status", metadata.xClerkAuthStatus);
+   }
+   if (metadata.isCI) {
+     headers2.set("Clerk-Is-CI", "true");
